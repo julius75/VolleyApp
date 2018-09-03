@@ -1,5 +1,7 @@
 package com.chain.volleyapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -13,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -21,6 +24,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,10 +59,10 @@ public class LoginActivity extends AppCompatActivity {
 
         registerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+           public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(),SignUpActivity.class));
-            }
-        });
+           }
+       });
     }
 
     private void loginRequest(){
@@ -72,13 +79,36 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
-                        pd.hide();
-                        showSnackbar(response);
+                        pd.dismiss();
+                        //showSnackbar(response);
+                        try {
+                            JSONArray res=new JSONArray(response);
+                            for(int i=0;i<res.length();i++){
+                                JSONObject obj= res.getJSONObject(i);
+                                String id=obj.getString("id");
+                                if(id.equals("None")) {
+                                  Toast.makeText(LoginActivity.this,"No such user",Toast.LENGTH_LONG).show();
+                                }
+                                else{
+                            SharedPreferences sharedPreferences=getSharedPreferences("loggedin",Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                                    sharedPreferences.edit();
+                                    editor.putString("logged",id);
+                                    Constants.useridlogged=id;
+                                    editor.apply();
+                                    Toast.makeText(LoginActivity.this,"there is such user"+id,Toast.LENGTH_LONG).show();
 
-                        if(response.equals("Login")) {
+                                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                                }
 
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+
+
 
 
                     }
@@ -96,15 +126,18 @@ public class LoginActivity extends AppCompatActivity {
                 }
         ) {
             @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("email", loginUserName.getText().toString());
-                params.put("password", loginPassword.getText().toString());
-                return params;
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                    params.put("email", loginUserName.getText().toString());
+                    params.put("password", loginPassword.getText().toString());
+
+                    return params;
+
             }
         };
-        postRequest.setRetryPolicy(new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(postRequest);
 
 

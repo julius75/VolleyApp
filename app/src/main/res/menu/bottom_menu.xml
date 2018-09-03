@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/notification"
+        android:icon="@drawable/notifications"
+        android:title="@string/bottom_notification_text"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/account"
+        android:title="@string/bottom_ac_text" />
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home"
+        android:title="@string/bottom_home_text"
+        />
+
+    <item
+        android:id="@+id/rateUs"
+        android:title="Rate Us" />
+
+    <item
+        android:id="@+id/logout"
+        android:title="logout" />
+
+
+</menu>
